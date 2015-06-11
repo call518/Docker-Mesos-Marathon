@@ -1,0 +1,11 @@
+{
+  "masters": ["master:5050"],
+  "refreshSeconds": 60,
+  "ttl": <%= @mesos_dns_conf_ttl %>,
+  "domain": "<%= @mesos_dns_conf_domain %>",
+  "port": <%= @mesos_dns_conf_port %>,
+  "resolvers": ["8.8.8.8"],
+  "timeout": 5,
+  "listener": "0.0.0.0",
+  "email": "root.mesos-dns.mesos"
+}

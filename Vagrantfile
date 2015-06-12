@@ -15,6 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   master_ip = "192.168.10.11"
   use_deimos = "false"
   use_mesos_dns = "true"
+  use_chronos = "false"
   docker_bip = "172.17.42.1"
   mesos_dns_conf_ttl = "60"
   mesos_dns_conf_port = "53"
@@ -58,6 +59,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       puppet.facter = {
         "master_ip" => "#{master_ip}",
         "zk_myid" => "1",
+        "use_chronos" => "#{use_chronos}",
       }
       puppet.options = "--verbose"
     end

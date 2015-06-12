@@ -139,18 +139,26 @@ service { "marathon":
     require => Service["mesos-master"],
 }
 
-#service { "chronos":
-#    ensure => running,
-#    require => Service["marathon"],
-#}
-
 exec { "Restart All Services":
     command => "service zookeeper stop; service zookeeper start; service mesos-master stop; service mesos-master start; service marathon stop; service marathon start",
-    #command => "service zookeeper stop; service zookeeper start; service mesos-master stop; service mesos-master start; service marathon stop; service marathon start; service chronos stop; service chronos start",
     user     => "root",
     timeout  => "0",
     logoutput => true,
     require => Service["marathon"],
-    #require => Service["chronos"],
+}
+
+if $::chronos == "true" {
+    service { "chronos":
+        ensure => running,
+        require => Exec["Restart All Services"],
+    }
+    exec { "Restart Chronos Services":
+        command => "service chronos stop; service chronos start",
+        require => Service["chronos"],
+        user     => "root",
+        timeout  => "0",
+        logoutput => true,
+        require => Service["chronos"],
+    }
 }
 

@@ -89,7 +89,7 @@ Browser> http://{Vagrant-Host-IP}:4400
 
 #### e.g. Creating Marathon Task
 
-(Note) Call API to master node.
+(Note) Call API to master node, and Required two slave nodes.
 
 ```bash
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" master:8080/v2/apps -d '

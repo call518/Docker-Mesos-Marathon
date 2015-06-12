@@ -89,8 +89,10 @@ Browser> http://{Vagrant-Host-IP}:4400
 
 #### e.g. Creating Marathon Task
 
+(Note) Call API to master node.
+
 ```bash
-curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" localhost:8080/v2/apps -d '
+curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" master:8080/v2/apps -d '
 {
   "id": "bridged-webapp",
   "cmd": "python3 -m http.server 8080",

@@ -19,7 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   mesos_dns_conf_ttl = "60"
   mesos_dns_conf_port = "53"
   mesos_dns_conf_domain = "mesos"
-  use_weave = "true"
+  use_weave = "false"
 
   config.vm.box = "trusty64"
   config.vm.box_url = "https://onedrive.live.com/download?resid=28f8f701dc29e4b9%21247"

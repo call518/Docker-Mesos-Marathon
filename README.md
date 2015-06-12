@@ -37,7 +37,7 @@ Orcheration Docker with Mesos/Marathon/Demios
   * mesos_dns_conf_ttl : default is "60"
   * mesos_dns_conf_port : default is "53"
   * mesos_dns_conf_domain : default is "mesos"
-  * use_weave : default is "true"
+  * use_weave : default is "false"
 
 ## ScreenShots
 

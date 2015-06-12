@@ -115,7 +115,8 @@ if $::use_deimos == "true" {
         user     => "root",
         timeout  => "0",
         logoutput => true,
-        before => Exec["Reload Configuration"],
+        require => Exec["Set /etc/mesos-slave/containerizer_path"],
+        before  => Exec["Reload Configuration"],
     }
 } else {
     exec { "Set /etc/mesos-slave/executor_registration_timeout":
@@ -131,7 +132,8 @@ if $::use_deimos == "true" {
         user     => "root",
         timeout  => "0",
         logoutput => true,
-        before => Exec["Reload Configuration"],
+        require => Exec["Set /etc/mesos-slave/executor_registration_timeout"],
+        before  => Exec["Reload Configuration"],
     }
 }
 

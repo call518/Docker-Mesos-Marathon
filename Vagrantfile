@@ -133,7 +133,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         puppet.options = "--verbose"
       end
       if use_weave == "true"
-        master.vm.provision "puppet" do |puppet|
+        slave.vm.provision "puppet" do |puppet|
           puppet.working_directory = "/vagrant/resources/puppet"
           puppet.hiera_config_path = "resources/puppet/hiera.yaml"
           puppet.manifests_path = "resources/puppet/manifests"

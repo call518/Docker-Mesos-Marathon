@@ -30,12 +30,15 @@ exec { "Set Mesos-Slave Hostname":
     require => [Package["python-pip"], Package["mesos"]],
 }
 
-exec { "Set DNS Nameserver":
-    command => "sed -i '1s/^/nameserver ${master_ip}\\n/' /etc/resolv.conf",
-    user     => "root",
-    timeout  => "0",
-    unless => "grep -q ${master_ip} /etc/resolv.conf",
-    require => Exec["Set Mesos-Slave Hostname"],
+if $::use_mesos_dns == "true" {
+    exec { "Set DNS Nameserver":
+        command => "sed -i '1s/^/nameserver ${master_ip}\\n/' /etc/resolv.conf",
+        user     => "root",
+        timeout  => "0",
+        unless => "grep -q ${master_ip} /etc/resolv.conf",
+        require => Exec["Set Mesos-Slave Hostname"],
+	before  => Service["Stop Zookeeper Service"],
+    }
 }
 
 service { 'Stop Zookeeper Service':
@@ -43,7 +46,7 @@ service { 'Stop Zookeeper Service':
     ensure => stopped,
     enable => false,
     provider => "upstart",
-    require => Exec["Set DNS Nameserver"],
+    require => Exec["Set Mesos-Slave Hostname"],
 }
 
 service { 'Stop Mesos-Master Service':
@@ -80,7 +83,7 @@ exec { "Set /etc/mesos/zk":
     require => File["Config /etc/default/docker"],
 }
 
-if $::use_deimos == false {
+if $::use_deimos == "true" {
     exec { "Install Deimos":
         command => "pip install deimos",
         user     => "root",
@@ -112,7 +115,7 @@ if $::use_deimos == false {
         user     => "root",
         timeout  => "0",
         logoutput => true,
-        require => Exec["Set /etc/mesos-slave/containerizer_path"],
+        before => Exec["Reload Configuration"],
     }
 } else {
     exec { "Set /etc/mesos-slave/executor_registration_timeout":
@@ -128,7 +131,7 @@ if $::use_deimos == false {
         user     => "root",
         timeout  => "0",
         logoutput => true,
-        require => Exec["Set /etc/mesos-slave/executor_registration_timeout"],
+        before => Exec["Reload Configuration"],
     }
 }
 
@@ -137,7 +140,6 @@ exec { "Reload Configuration":
     user     => "root",
     timeout  => "0",
     logoutput => true,
-    require => Exec["Set /etc/mesos-slave/containerizers"],
 }
 
 service { "docker":
@@ -160,23 +162,10 @@ exec { "Restart All Services":
     require => Service["mesos-slave"],
 }
 
-exec { "Install Weave Script":
-    command => "wget https://github.com/zettio/weave/releases/download/latest_release/weave -O /usr/local/bin/weave && chmod a+x /usr/local/bin/weave",
-    user     => "root",
-    timeout  => "0",
-    require => Exec["Restart All Services"],
-}
-
-exec { "Reset Weave":
-    command => "/usr/local/bin/weave reset",
-    user     => "root",
-    timeout  => "0",
-    require => Exec["Install Weave Script"],
-}
-
+### Not Used ###
 #exec { "Start DNSDock":
 #    provider => shell,
-#    command => "if docker ps -a -f name=dnsdock | grep dnsdock; then docker rm -f dnsdock 2> /dev/null > /dev/null; fi; docker run -d -v /var/run/docker.sock:/var/run/docker.sock --name dnsdock -p $::docker_bip:53:53/udp tonistiigi/dnsdock --domain=$::dnsdock_domain --environment=$::dnsdock_environment",
+#    command => "if docker ps -a -f name=dnsdock | grep dnsdock; then docker rm -f dnsdock 2> /dev/null > /dev/null; fi; docker run -d -v /var/run/docker.sock:/var/run/docker.sock --name dnsdock -p $::dnsdock_bip:53:53/udp tonistiigi/dnsdock --domain=$::dnsdock_domain --environment=$::dnsdock_environment",
 #    user     => "root",
 #    timeout  => "0",
 #    #logoutput => true,

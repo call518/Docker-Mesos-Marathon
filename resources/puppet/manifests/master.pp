@@ -15,11 +15,11 @@ apt::source { "docker":
     before            => Exec["Install lxc-docker"],
 }
 
-package { "git":
-    ensure   => installed,
-}
+#package { "python-setuptools":
+#    ensure   => installed,
+#}
 
-package { "golang":
+package { "git":
     ensure   => installed,
 }
 
@@ -35,7 +35,7 @@ exec { "Set ZK's myid":
     command  => "echo ${zk_myid} > /etc/zookeeper/conf/myid",
     user     => "root",
     timeout  => "0",
-    require => [Package["git"], Package["golang"], Package["python-setuptools"], Package["mesosphere"]],
+    require => [Package["git"], Package["python-setuptools"], Package["mesosphere"]],
 }
 
 exec { "Set Mesos-Master Hostname":
@@ -152,103 +152,5 @@ exec { "Restart All Services":
     logoutput => true,
     require => Service["marathon"],
     #require => Service["chronos"],
-}
-
-
-######### Setup Mesos-DNS ##########
-
-$GOPATH = "/home/go"
-
-file { "${GOPATH}":
-    ensure   => directory,
-    owner    => "root",
-    group    => "root",
-    mode     => 0750,
-    require  => Exec["Restart All Services"],
-}
-
-file { "/usr/local/mesos-dns":
-    ensure   => directory,
-    owner    => "root",
-    group    => "root",
-    mode     => 0750,
-    require  => File["${GOPATH}"],
-}
-
-file { "/etc/profile.d/mesos-dns.sh":
-    ensure  => present,
-    owner    => "vagrant",
-    group    => "vagrant",
-    content => "export GOPATH=\"${GOPATH}\"",
-    require => File["/usr/local/mesos-dns"],
-}
-
-exec { "Download github.com/miekg/dns":
-    command => "go get github.com/miekg/dns",
-    environment => ["GOPATH=${GOPATH}"],
-    user     => "root",
-    timeout  => "0",
-    logoutput => true,
-    require => File["/etc/profile.d/mesos-dns.sh"],
-}
-
-exec { "Download github.com/mesosphere/mesos-dns":
-    command => "go get github.com/mesosphere/mesos-dns",
-    environment => ["GOPATH=${GOPATH}"],
-    user     => "root",
-    timeout  => "0",
-    logoutput => true,
-    require => Exec["Download github.com/miekg/dns"],
-}
-
-exec { "Build mesos-dns Binary":
-    command => "go build -o /usr/local/mesos-dns/mesos-dns",
-    environment => ["GOPATH=${GOPATH}"],
-    cwd => "$GOPATH/src/github.com/mesosphere/mesos-dns",
-    user     => "root",
-    timeout  => "0",
-    logoutput => true,
-    require => Exec["Download github.com/mesosphere/mesos-dns"],
-}
-
-file { "Config Mesos-DNS":
-    path    => "/usr/local/mesos-dns/config.json",
-    ensure  => present,
-    owner   => "root",
-    group   => "root",
-    mode    => 0644,
-    content => template("/vagrant/resources/puppet/templates/mesos-dns-config.json.erb"),
-    require => Exec["Build mesos-dns Binary"],
-}
-        
-exec { "Run Mesos-DNS Service":
-    command => "/usr/local/mesos-dns/mesos-dns -config=/usr/local/mesos-dns/config.json &",
-    environment => ["GOPATH=${GOPATH}"],
-    user     => "root",
-    timeout  => "0",
-    #logoutput => true,
-    unless   => "lsof -ni:#{mesos_dns_conf_port}",
-    require => File["Config Mesos-DNS"],
-}
-
-exec { "Set DNS Nameserver":
-    command => "sed -i '1s/^/nameserver 127.0.0.1\\n/' /etc/resolv.conf",
-    user     => "root",
-    timeout  => "0",
-    require => Exec["Run Mesos-DNS Service"],
-}
-
-exec { "Install Weave Script":
-    command => "wget https://github.com/zettio/weave/releases/download/latest_release/weave -O /usr/local/bin/weave && chmod a+x /usr/local/bin/weave",
-    user     => "root",
-    timeout  => "0",
-    require => Exec["Set DNS Nameserver"],
-}
-
-exec { "Reset Weave":
-    command => "/usr/local/bin/weave reset",
-    user     => "root",
-    timeout  => "0",
-    require => Exec["Install Weave Script"],
 }
 

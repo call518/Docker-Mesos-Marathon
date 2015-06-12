@@ -30,6 +30,14 @@ Orcheration Docker with Mesos/Marathon/Demios
   * Mesos-Slave
   * Docker
   * (Note) Edit "num_slave_nodes" in Vagrantfile
+* Parameters in Vagrantfile
+  * master_ip
+  * use_deimos : default is "false"
+  * use_mesos_dns : default is "true"
+  * mesos_dns_conf_ttl : default is "60"
+  * mesos_dns_conf_port : default is "53"
+  * mesos_dns_conf_domain : default is "mesos"
+  * use_weave : default is "true"
 
 ## ScreenShots
 

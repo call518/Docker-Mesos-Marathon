@@ -13,6 +13,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #config.ssh.forward_x11 = true
 
   master_ip = "192.168.10.11"
+  use_deimos = "false"
+  use_mesos_dns = "true"
+#(Not used)#  dnsdock_bip = "172.17.42.1"
+  mesos_dns_conf_ttl = "60"
+  mesos_dns_conf_port = "53"
+  mesos_dns_conf_domain = "mesos"
+  use_weave = "true"
 
   config.vm.box = "trusty64"
   config.vm.box_url = "https://onedrive.live.com/download?resid=28f8f701dc29e4b9%21247"
@@ -51,12 +58,33 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       puppet.facter = {
         "master_ip" => "#{master_ip}",
         "zk_myid" => "1",
-        "mesos_dns_conf_domain" => "mesos",
-        "mesos_dns_conf_port" => "53",
-        "mesos_dns_conf_ttl" => "60",
-        "docker_bip" => "172.17.42.1"
       }
       puppet.options = "--verbose"
+    end
+    if use_mesos_dns == "true"
+      master.vm.provision "puppet" do |puppet|
+        puppet.working_directory = "/vagrant/resources/puppet"
+        puppet.hiera_config_path = "resources/puppet/hiera.yaml"
+        puppet.manifests_path = "resources/puppet/manifests"
+        puppet.manifest_file  = "mesos-dns.pp"
+        puppet.facter = {
+          "master_ip" => "#{master_ip}",
+          "use_mesos_dns" => "#{use_mesos_dns}",
+          "mesos_dns_conf_domain" => "#{mesos_dns_conf_domain}",
+          "mesos_dns_conf_port" => "#{mesos_dns_conf_port}",
+          "mesos_dns_conf_ttl" => "#{mesos_dns_conf_ttl}",
+        }
+        puppet.options = "--verbose"
+      end
+    end
+    if use_weave == "true"
+      master.vm.provision "puppet" do |puppet|
+        puppet.working_directory = "/vagrant/resources/puppet"
+        puppet.hiera_config_path = "resources/puppet/hiera.yaml"
+        puppet.manifests_path = "resources/puppet/manifests"
+        puppet.manifest_file  = "weave.pp"
+        puppet.options = "--verbose"
+      end
     end
   end
 
@@ -96,12 +124,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         puppet.manifest_file  = "slave.pp"
         puppet.facter = {
           "master_ip" => "#{master_ip}",
-          "use_deimos" => false,
-#          "dnsdock_domain" => "docker",
-#          "dnsdock_environment" => "dev",
-          "docker_bip" => "172.17.42.1"
+          "use_deimos" => "#{use_deimos}",
+#(Not used)#          "dnsdock_domain" => "docker",
+#(Not used)#          "dnsdock_environment" => "dev",
+#(Not used)#          "dnsdock_bip" => "#{dnsdock_bip}",
+          "use_mesos_dns" => "#{use_mesos_dns}",
         }
         puppet.options = "--verbose"
+      end
+      if use_weave == "true"
+        master.vm.provision "puppet" do |puppet|
+          puppet.working_directory = "/vagrant/resources/puppet"
+          puppet.hiera_config_path = "resources/puppet/hiera.yaml"
+          puppet.manifests_path = "resources/puppet/manifests"
+          puppet.manifest_file  = "weave.pp"
+          puppet.options = "--verbose"
+        end
       end
     end
   end

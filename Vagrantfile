@@ -15,7 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   master_ip = "192.168.10.11"
   use_deimos = "false"
   use_mesos_dns = "true"
-#(Not used)#  dnsdock_bip = "172.17.42.1"
+  docker_bip = "172.17.42.1"
   mesos_dns_conf_ttl = "60"
   mesos_dns_conf_port = "53"
   mesos_dns_conf_domain = "mesos"
@@ -127,7 +127,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           "use_deimos" => "#{use_deimos}",
 #(Not used)#          "dnsdock_domain" => "docker",
 #(Not used)#          "dnsdock_environment" => "dev",
-#(Not used)#          "dnsdock_bip" => "#{dnsdock_bip}",
+          "docker_bip" => "#{docker_bip}",
           "use_mesos_dns" => "#{use_mesos_dns}",
         }
         puppet.options = "--verbose"

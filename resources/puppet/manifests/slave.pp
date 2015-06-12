@@ -167,7 +167,7 @@ exec { "Restart All Services":
 ### Not Used ###
 #exec { "Start DNSDock":
 #    provider => shell,
-#    command => "if docker ps -a -f name=dnsdock | grep dnsdock; then docker rm -f dnsdock 2> /dev/null > /dev/null; fi; docker run -d -v /var/run/docker.sock:/var/run/docker.sock --name dnsdock -p $::dnsdock_bip:53:53/udp tonistiigi/dnsdock --domain=$::dnsdock_domain --environment=$::dnsdock_environment",
+#    command => "if docker ps -a -f name=dnsdock | grep dnsdock; then docker rm -f dnsdock 2> /dev/null > /dev/null; fi; docker run -d -v /var/run/docker.sock:/var/run/docker.sock --name dnsdock -p $::docker_bip:53:53/udp tonistiigi/dnsdock --domain=$::dnsdock_domain --environment=$::dnsdock_environment",
 #    user     => "root",
 #    timeout  => "0",
 #    #logoutput => true,

@@ -34,6 +34,7 @@ Orcheration Docker with Mesos/Marathon/Demios
   * master_ip
   * use_deimos : default is "false"
   * use_mesos_dns : default is "true"
+  * docker_bip : default is "172.17.42.1"
   * mesos_dns_conf_ttl : default is "60"
   * mesos_dns_conf_port : default is "53"
   * mesos_dns_conf_domain : default is "mesos"

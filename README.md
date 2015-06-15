@@ -87,6 +87,8 @@ Browser> http://{Vagrant-Host-IP}:4400
 
 ### Example API
 
+* Ref: https://mesosphere.github.io/marathon/docs/rest-api.html
+
 #### e.g. Creating Marathon Task
 
 (Note) Call API to master node, and Required two slave nodes.

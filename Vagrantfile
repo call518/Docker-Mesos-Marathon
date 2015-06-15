@@ -32,8 +32,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     master.vm.network "forwarded_port", guest: 5050, host: 5050
     master.vm.network "forwarded_port", guest: 4400, host: 4400
     master.vm.provider :virtualbox do |vb|
-      vb.customize ["modifyvm", :id, "--cpus", "2"]
-      vb.customize ["modifyvm", :id, "--memory", "2048"]
+      vb.customize ["modifyvm", :id, "--cpus", "1"]
+      vb.customize ["modifyvm", :id, "--memory", "1024"]
     end
     master.vm.provision "shell", path: "resources/puppet/scripts/upgrade-puppet.sh"
     master.vm.provision "shell", path: "resources/puppet/scripts/bootstrap.sh"
@@ -100,8 +100,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       slave.vm.hostname = "slave-#{n+1}"
       slave.vm.network "private_network", ip: "#{slave_ip}"
       slave.vm.provider :virtualbox do |vb|
-        vb.customize ["modifyvm", :id, "--cpus", "2"]
-        vb.customize ["modifyvm", :id, "--memory", "2048"]
+        vb.customize ["modifyvm", :id, "--cpus", "1"]
+        vb.customize ["modifyvm", :id, "--memory", "1024"]
       end
       slave.vm.provision "shell", path: "resources/puppet/scripts/upgrade-puppet.sh"
       slave.vm.provision "shell", path: "resources/puppet/scripts/bootstrap.sh"
